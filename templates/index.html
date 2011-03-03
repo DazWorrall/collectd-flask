@@ -1,0 +1,10 @@
+<h1>Hosts</h1>
+<ul>
+{% for host in hosts %}
+  <li><a href="{{ host }}/">{{ host }}</a> - 
+  {% for plugin in plugins[host] %}
+    <a href="{{ host }}/{{ plugin}}/">{{ plugin }}</a>
+  {% endfor %}
+  </li>
+{% endfor %}
+</ul>

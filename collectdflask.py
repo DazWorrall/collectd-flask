@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from json import loads
 from httplib2 import Http
 import sys
@@ -39,23 +39,24 @@ def graph(hosts, plugins, period='month'):
 
 @app.route('/')
 def index():
+    period = request.args.get('period', 'month')
     hosts = json_request('hostlist_json')
     plugins = {}
     for host in hosts:
         plugins[host] = json_request('pluginlist_json', host=host)
-    return render_template('index.html', hosts=hosts, plugins=plugins)
+    return render_template('index.html', hosts=hosts, plugins=plugins, period=period)
 
 @app.route('/<hostname>/')
 def graph_by_host(hostname):
     hosts = [hostname]
     plugins = {hostname: json_request('pluginlist_json', host=hostname)}
-    return graph(hosts, plugins)
+    return graph(hosts, plugins, request.args.get('period', 'month'))
 
 @app.route('/<hostname>/<plugin>/')
 def graph_by_host_with_plugin(hostname, plugin):
     hosts = [hostname]
     plugins = {hostname: [plugin]}
-    return graph(hosts, plugins)
+    return graph(hosts, plugins, request.args.get('period', 'month'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

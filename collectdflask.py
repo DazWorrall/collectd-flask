@@ -35,7 +35,7 @@ def graph(hosts, plugins, period='month'):
         graphs[host] = {}
         for plugin in plugins[host]:
             graphs[host][plugin] = [app.config['COLLECTD_WEB_PREFIX'] + x for x in json_request('graphs_json', host=host, plugin=plugin)[period]]
-    return render_template('graph.html', hosts=hosts, plugins=plugins, graphs=graphs)
+    return render_template('graph.html', hosts=hosts, plugins=plugins, graphs=graphs, period=period)
 
 @app.route('/')
 def index():

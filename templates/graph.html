@@ -1,3 +1,8 @@
+<h2>Period<h2>
+{% for p in ['hour', 'day', 'month'] %}
+  {% if period == p %}{{ p }} {% else %}<a href='?period={{ p }}'>{{ p }}</a> {% endif %}
+{% endfor %}
+
 <h1>Graphs</h1>
 {% for host in hosts %}
   <h2>{{ host }}</h2>

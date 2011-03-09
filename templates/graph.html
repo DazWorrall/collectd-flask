@@ -1,5 +1,5 @@
 <h2>Period<h2>
-{% for p in ['hour', 'day', 'month'] %}
+{% for p in ['hour', 'day', 'week', 'month'] %}
   {% if period == p %}{{ p }} {% else %}<a href='?period={{ p }}'>{{ p }}</a> {% endif %}
 {% endfor %}
 

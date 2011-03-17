@@ -60,8 +60,10 @@ def graph_by_host(hostname):
 
 @app.route('/<hostname>/<plugin>/')
 def graph_by_host_with_plugin(hostname, plugin):
-    hosts = [hostname]
-    plugins = {hostname: [plugin]}
+    hosts = [h for h in get_hosts() if fnmatch.fnmatch(h, hostname)]
+    plugins = {}
+    for h in hosts:
+        plugins[h] = [p for p in json_request('pluginlist_json', host=h) if fnmatch.fnmatch(p, plugin)]
     return graph(hosts, plugins, request.args.get('period', 'month'))
 
 if __name__ == '__main__':

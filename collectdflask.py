@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 from json import loads
 from httplib2 import Http
 import sys
+import fnmatch
 
 COLLECTD_WEB_URL = 'http://example.com/cgi-bin'
 COLLECTD_WEB_PREFIX = 'http://example.com'
@@ -29,6 +30,9 @@ def json_request(action, **parameters):
         print >>sys.stderr, key
     return decoded_object
 
+def get_hosts():
+    return json_request('hostlist_json')
+
 def graph(hosts, plugins, period='month'):
     graphs = {}
     for host in hosts:
@@ -40,7 +44,7 @@ def graph(hosts, plugins, period='month'):
 @app.route('/')
 def index():
     period = request.args.get('period', 'month')
-    hosts = json_request('hostlist_json')
+    hosts = get_hosts()
     plugins = {}
     for host in hosts:
         plugins[host] = json_request('pluginlist_json', host=host)
@@ -48,8 +52,10 @@ def index():
 
 @app.route('/<hostname>/')
 def graph_by_host(hostname):
-    hosts = [hostname]
-    plugins = {hostname: json_request('pluginlist_json', host=hostname)}
+    hosts = [h for h in get_hosts() if fnmatch.fnmatch(h, hostname)]
+    plugins = {}
+    for h in hosts:
+        plugins[h] =  json_request('pluginlist_json', host=h)
     return graph(hosts, plugins, request.args.get('period', 'month'))
 
 @app.route('/<hostname>/<plugin>/')

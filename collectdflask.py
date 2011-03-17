@@ -30,8 +30,17 @@ def json_request(action, **parameters):
         print >>sys.stderr, key
     return decoded_object
 
-def get_hosts():
+def get_hosts(pattern=None):
+    #TODO dont curl for this, walk the filesystemi
+    if pattern:
+        return [h for h in json_request('hostlist_json') if fnmatch.fnmatch(h, pattern)]
     return json_request('hostlist_json')
+
+def get_plugins_for_host(hostname, pluginpattern=None):
+    #TODO dont curl for this, walk the filesystem
+    if pluginpattern:
+        return [p for p in json_request('pluginlist_json', host=hostname) if fnmatch.fnmatch(p, pluginpattern)]
+    return json_request('pluginlist_json', host=hostname)
 
 def graph(hosts, plugins, period='month'):
     graphs = {}
@@ -47,23 +56,23 @@ def index():
     hosts = get_hosts()
     plugins = {}
     for host in hosts:
-        plugins[host] = json_request('pluginlist_json', host=host)
+        plugins[host] = get_plugins_for_host(host)
     return render_template('index.html', hosts=hosts, plugins=plugins, period=period)
 
-@app.route('/<hostname>/')
-def graph_by_host(hostname):
-    hosts = [h for h in get_hosts() if fnmatch.fnmatch(h, hostname)]
+@app.route('/<hostpattern>/')
+def graph_by_host(hostpattern):
+    hosts = get_hosts(hostpattern)
     plugins = {}
     for h in hosts:
-        plugins[h] =  json_request('pluginlist_json', host=h)
+        plugins[h] = get_plugins_for_host(h)
     return graph(hosts, plugins, request.args.get('period', 'month'))
 
-@app.route('/<hostname>/<plugin>/')
-def graph_by_host_with_plugin(hostname, plugin):
-    hosts = [h for h in get_hosts() if fnmatch.fnmatch(h, hostname)]
+@app.route('/<hostpattern>/<pluginpattern>/')
+def graph_by_host_with_plugin(hostpattern, pluginpattern):
+    hosts = get_hosts(hostpattern)
     plugins = {}
     for h in hosts:
-        plugins[h] = [p for p in json_request('pluginlist_json', host=h) if fnmatch.fnmatch(p, plugin)]
+        plugins[h] = get_plugins_for_host(h, pluginpattern)
     return graph(hosts, plugins, request.args.get('period', 'month'))
 
 if __name__ == '__main__':

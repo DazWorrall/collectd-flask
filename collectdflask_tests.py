@@ -4,12 +4,13 @@ try:
 except ImportError:
     import unittest
 import collectdflask
+from lxml import etree
 import os
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data')
 collectdflask.app.config['COLLECTD_DATA_DIR'] = TEST_DATA_DIR
 
-class TestCollectdFlask(unittest.TestCase):
+class TestDataDirParsing(unittest.TestCase):
 
     def setUp(self):
         self.app = collectdflask.app.test_client()
@@ -54,6 +55,29 @@ class TestCollectdFlask(unittest.TestCase):
         self.assertEqual(
             sorted(plugins),
             ['plugin1', 'plugin2', 'plugin3'],
+        )
+
+
+class TestViews(unittest.TestCase):
+
+    def setUp(self):
+        self.app = collectdflask.app.test_client()
+
+    def test_index(self):
+        response = self.app.get('/')
+        tree = etree.fromstring(response.data)
+        ul = tree.findall('.//ul/li')
+        result = {}
+        for entry in ul:
+            links = entry.findall('.//a')
+            result[links[0].text] = sorted([a.text for a in links[1:]])
+        self.assertEqual(
+            result,
+            {
+               'host1' : ['plugin1'],
+	       'host2' : ['plugin1', 'plugin2'],
+	       'host3' : ['plugin1', 'plugin2', 'plugin3'],
+            },
         )
 
 

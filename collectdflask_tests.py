@@ -21,6 +21,19 @@ class TestCollectdFlask(unittest.TestCase):
 	    ['host1', 'host2', 'host3'],
         )
 
+    def test_get_hosts_wildcard(self):
+        hosts = collectdflask.get_hosts('*')
+        self.assertEqual(
+            sorted(hosts),
+	    ['host1', 'host2', 'host3'],
+        )
+
+    def test_get_host_pattern(self):
+        hosts = collectdflask.get_hosts('*1')
+        self.assertEqual(
+            hosts,
+	    ['host1'],
+        )
 
 if __name__ == '__main__':
     unittest.main()

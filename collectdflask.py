@@ -35,7 +35,10 @@ def json_request(action, **parameters):
 
 def get_hosts(pattern=None):
     datadir = app.config['COLLECTD_DATA_DIR']
-    return [h for h in listdir(datadir) if isdir(join(datadir, h))]
+    hosts = [h for h in listdir(datadir) if isdir(join(datadir, h))]
+    if pattern:
+        return fnmatch.filter(hosts, pattern)
+    return hosts
 
 def get_plugins_for_host(hostname, pluginpattern=None):
     #TODO dont curl for this, walk the filesystem

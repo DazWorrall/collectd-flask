@@ -4,9 +4,12 @@ from json import loads
 from httplib2 import Http
 import sys
 import fnmatch
+from os import listdir
+from os.path import isdir, join
 
 COLLECTD_WEB_URL = 'http://example.com/cgi-bin'
 COLLECTD_WEB_PREFIX = 'http://example.com'
+COLLECTD_DATA_DIR = '/var/lib/collectd'
 
 app = Flask(__name__)
 app.debug = True
@@ -31,10 +34,8 @@ def json_request(action, **parameters):
     return decoded_object
 
 def get_hosts(pattern=None):
-    #TODO dont curl for this, walk the filesystemi
-    if pattern:
-        return [h for h in json_request('hostlist_json') if fnmatch.fnmatch(h, pattern)]
-    return json_request('hostlist_json')
+    datadir = app.config['COLLECTD_DATA_DIR']
+    return [h for h in listdir(datadir) if isdir(join(datadir, h))]
 
 def get_plugins_for_host(hostname, pluginpattern=None):
     #TODO dont curl for this, walk the filesystem

@@ -6,10 +6,20 @@ except ImportError:
 import collectdflask
 import os
 
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data')
+collectdflask.app.config['COLLECTD_DATA_DIR'] = TEST_DATA_DIR
+
 class TestCollectdFlask(unittest.TestCase):
 
     def setUp(self):
         self.app = collectdflask.app.test_client()
+
+    def test_get_hosts(self):
+        hosts = collectdflask.get_hosts()
+        self.assertEqual(
+            sorted(hosts),
+	    ['host1', 'host2', 'host3'],
+        )
 
 
 if __name__ == '__main__':

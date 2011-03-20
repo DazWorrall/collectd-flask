@@ -18,14 +18,14 @@ class TestDataDirParsing(unittest.TestCase):
     def test_get_hosts(self):
         hosts = collectdflask.get_hosts()
         self.assertEqual(
-            sorted(hosts),
+            hosts,
 	    ['host1', 'host2', 'host3'],
         )
 
     def test_get_hosts_wildcard(self):
         hosts = collectdflask.get_hosts('*')
         self.assertEqual(
-            sorted(hosts),
+            hosts,
 	    ['host1', 'host2', 'host3'],
         )
 
@@ -53,7 +53,7 @@ class TestDataDirParsing(unittest.TestCase):
     def test_get_plugins_for_host_wildcard(self):
         plugins = collectdflask.get_plugins_for_host('host3', '*')
         self.assertEqual(
-            sorted(plugins),
+            plugins,
             ['plugin1', 'plugin2', 'plugin3'],
         )
 
@@ -70,7 +70,7 @@ class TestViews(unittest.TestCase):
         result = {}
         for entry in ul:
             links = entry.findall('.//a')
-            result[links[0].text] = sorted([a.text for a in links[1:]])
+            result[links[0].text] = [a.text for a in links[1:]]
         self.assertEqual(
             result,
             {

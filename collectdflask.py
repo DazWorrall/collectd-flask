@@ -36,6 +36,7 @@ def json_request(action, **parameters):
 def get_hosts(pattern=None):
     datadir = app.config['COLLECTD_DATA_DIR']
     hosts = [h for h in listdir(datadir) if isdir(join(datadir, h))]
+    hosts.sort()
     if pattern:
         return fnmatch.filter(hosts, pattern)
     return hosts
@@ -43,6 +44,7 @@ def get_hosts(pattern=None):
 def get_plugins_for_host(hostname, pattern=None):
     plugindir = join(app.config['COLLECTD_DATA_DIR'], hostname)
     plugins = [p for p in listdir(plugindir) if isdir(join(plugindir, p))]
+    plugins.sort()
     if pattern:
         return fnmatch.filter(plugins, pattern)
     return plugins

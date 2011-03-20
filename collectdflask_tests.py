@@ -35,5 +35,27 @@ class TestCollectdFlask(unittest.TestCase):
 	    ['host1'],
         )
 
+    def test_get_plugins_for_host(self):
+        plugins = collectdflask.get_plugins_for_host('host1')
+        self.assertEqual(
+            plugins,
+            ['plugin1'],
+        )
+
+    def test_get_plugins_for_host_pattern(self):
+        plugins = collectdflask.get_plugins_for_host('host3', '*3')
+        self.assertEqual(
+            plugins,
+            ['plugin3'],
+        )
+
+    def test_get_plugins_for_host_wildcard(self):
+        plugins = collectdflask.get_plugins_for_host('host3', '*')
+        self.assertEqual(
+            sorted(plugins),
+            ['plugin1', 'plugin2', 'plugin3'],
+        )
+
+
 if __name__ == '__main__':
     unittest.main()

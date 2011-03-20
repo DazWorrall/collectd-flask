@@ -40,11 +40,12 @@ def get_hosts(pattern=None):
         return fnmatch.filter(hosts, pattern)
     return hosts
 
-def get_plugins_for_host(hostname, pluginpattern=None):
-    #TODO dont curl for this, walk the filesystem
-    if pluginpattern:
-        return [p for p in json_request('pluginlist_json', host=hostname) if fnmatch.fnmatch(p, pluginpattern)]
-    return json_request('pluginlist_json', host=hostname)
+def get_plugins_for_host(hostname, pattern=None):
+    plugindir = join(app.config['COLLECTD_DATA_DIR'], hostname)
+    plugins = [p for p in listdir(plugindir) if isdir(join(plugindir, p))]
+    if pattern:
+        return fnmatch.filter(plugins, pattern)
+    return plugins
 
 def graph(hosts, plugins, period='month'):
     graphs = {}

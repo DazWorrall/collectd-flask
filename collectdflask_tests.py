@@ -57,6 +57,13 @@ class TestDataDirParsing(unittest.TestCase):
             ['plugin1', 'plugin2', 'plugin3'],
         )
 
+    def test_multi_instance_plugin(self):
+        plugins = collectdflask.get_plugins_for_host('host2')
+        self.assertEqual(
+            plugins,
+            ['multi', 'plugin1', 'plugin2'],
+        )
+
 
 class TestViews(unittest.TestCase):
 
@@ -75,7 +82,7 @@ class TestViews(unittest.TestCase):
             result,
             {
                'host1' : ['plugin1'],
-	       'host2' : ['plugin1', 'plugin2'],
+	       'host2' : ['multi', 'plugin1', 'plugin2'],
 	       'host3' : ['plugin1', 'plugin2', 'plugin3'],
             },
         )

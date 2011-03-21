@@ -43,7 +43,8 @@ def get_hosts(pattern=None):
 
 def get_plugins_for_host(hostname, pattern=None):
     plugindir = join(app.config['COLLECTD_DATA_DIR'], hostname)
-    plugins = [p for p in listdir(plugindir) if isdir(join(plugindir, p))]
+    plugins = [p.split('-', 1)[0] for p in listdir(plugindir) if isdir(join(plugindir, p))]
+    plugins = list(set(plugins))
     plugins.sort()
     if pattern:
         return fnmatch.filter(plugins, pattern)
